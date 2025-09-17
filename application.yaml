@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: register-application
+  namespace: argocd  
+spec:
+  project: default
+  source:
+    repoURL: https://lynasovann.github.io/artifacts/
+    chart: nextjs 
+    targetRevision: 0.2.3        
+    helm:
+      releaseName: register-app
+      values: |                      
+        domainName: "argocd-register.lynasovann.site"
+
+        image:
+          repository: lynakiddy/nextjs
+          tag: "1.0.2"
+          containerPort: 3000
+
+        service:
+          type: ClusterIP
+          port: 3000
+          targetPort: 3000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: register-app
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
